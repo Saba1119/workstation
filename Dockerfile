@@ -49,7 +49,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g npm@6.14.14
 
-
 # Verify Node.js and npm installation
 RUN node -v && npm -v
 
@@ -62,7 +61,6 @@ RUN apt-get install -y gcc g++
 # Install PHP
 RUN apt-get install -y php
 
-
 # Install Kubernetes CLI (kubectl)
 RUN curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl && \
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
@@ -72,7 +70,7 @@ RUN curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/st
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
     chmod 700 get_helm.sh && \
     ./get_helm.sh && \
-    rm get_helm.sh    
+    rm get_helm.sh
 
 # Install Scala Metals and Parquet Viewer extensions for VS Code
 RUN wget https://open-vsx.org/api/scalameta/metals/1.23.0/file/scalameta.metals-1.23.0.vsix && \
@@ -86,12 +84,26 @@ RUN wget https://open-vsx.org/api/dvirtz/parquet-viewer/2.2.2/file/dvirtz.parque
 # Install Redis and start service
 RUN apt-get install -y redis-server && \
     service redis-server start
+
 # Install PostgreSQL (psql)
 RUN apt-get install -y postgresql-client
 
+# Install Go
+RUN wget https://dl.google.com/go/go1.18.3.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.18.3.linux-amd64.tar.gz && \
+    rm go1.18.3.linux-amd64.tar.gz && \
+    echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+
+# Install Ruby
+RUN apt-get install -y ruby-full
+
+# Install R
+RUN wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | gpg --dearmor > /usr/share/keyrings/r-project-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/r-project-archive-keyring.gpg] https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" | tee /etc/apt/sources.list.d/r-project.list && \
+    apt-get update && \
+    apt-get install -y r-base
 
 # Clean up unnecessary packages
 RUN apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
