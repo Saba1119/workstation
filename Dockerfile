@@ -1,4 +1,4 @@
-# Use an official Ubuntu as a parent image
+# Use an official ubuntu as a parent image
 FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest
 
 # Set environment variables to avoid user interaction during the installation
